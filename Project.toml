@@ -1,0 +1,7 @@
+name = "SFGAnalysis"
+uuid = "890055bb-5767-4b83-a3f7-06afd772d8e8"
+authors = ["Michael Lackner <lacknersmichael@gmail.com"]
+version = "0.1.0"
+
+[compat]
+julia = "1.3"
