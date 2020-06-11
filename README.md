@@ -58,7 +58,7 @@ group for tilt angles between 0 and 90 degrees. Note that we append a factor of
 χ_eff_ppp_as = effective_susceptibility.(θ, s, :ppp; pointgroup=:c3v, mode=:as) * sec(s.Ω.β)
 ```
 
-Finally, we can the effective susceptibilities and we should be able to see the expected result.
+Finally, we can plot the effective susceptibilities and we should be able to see the expected result.
 
 ```julia
 using Plots
@@ -70,3 +70,5 @@ plot!(θdeg, χ_eff_ssp_as, label="ssp as")
 plot!(θdeg, χ_eff_ppp_ss, label="ppp ss")
 plot!(θdeg, χ_eff_ppp_as, label="ppp as")
 ```
+
+![example](https://user-images.githubusercontent.com/8495596/84396387-9e0e4680-abfe-11ea-8d54-cd1fa7a246a8.png)
