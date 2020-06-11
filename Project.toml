@@ -3,5 +3,9 @@ uuid = "890055bb-5767-4b83-a3f7-06afd772d8e8"
 authors = ["Michael Lackner <lacknersmichael@gmail.com"]
 version = "0.1.0"
 
+[deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
+
 [compat]
 julia = "1.3"
