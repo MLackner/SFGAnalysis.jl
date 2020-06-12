@@ -1,7 +1,7 @@
 # SFGAnalysis 
 [![Build Status](https://travis-ci.com/MLackner/SFGAnalysis.jl.svg?branch=master)](https://travis-ci.com/MLackner/SFGAnalysis.jl) [![Coverage](https://codecov.io/gh/MLackner/SFGAnalysis.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/MLackner/SFGAnalysis.jl)
 
-## Tutorial
+## Effective Susceptibilities
 
 Let us replicate the data in Figure 4 from https://doi.org/10.1021/jp067062h (*J.
 Phys. Chem. C 2007, 111, 8716-8725*).
@@ -69,4 +69,17 @@ plot!(θdeg, χ_eff_ssp_ss, label="ssp ss")
 plot!(θdeg, χ_eff_ssp_as, label="ssp as")
 plot!(θdeg, χ_eff_ppp_ss, label="ppp ss")
 plot!(θdeg, χ_eff_ppp_as, label="ppp as")
+```
+
+## Angle Distributions
+
+To input a distribution of tilt angles instead of a fixed angle we can use the
+`Distributions.jl` package. In this example we use a distribution of the tilt
+angle with the central angle being `0` radians and a standard deviation of `π/4`.
+
+```julia
+using Distributions
+
+dist = Normal(0, π/4)
+χ_eff = effective_susceptibility(dist, s, :ssp; pointgroup=:c3v, mode=:as)
 ```
