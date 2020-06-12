@@ -1,5 +1,8 @@
 module SFGAnalysis
 
+using Distributions
+using QuadGK
+
 include("types.jl")
 include("general.jl")
 include("fresnel.jl")

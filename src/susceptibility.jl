@@ -41,7 +41,7 @@ function susceptibility_c3v_as_zzz(θ; β_aca=1.0, N=1.0)
 end
 
 """
-    susceptibility(θ::Real, t::Symbol; pointgroup, mode, R, beta, N)
+    susceptibility(θ::Real, t::Symbol; pointgroup, mode, R, beta, N; <kwargs>)
 
 Compute the susceptibility for angle `θ` and tensor element `t`.
 Tensor elements important for specific polarization combinations:
@@ -50,13 +50,18 @@ Tensor elements important for specific polarization combinations:
 * pss: `:zyy`
 * ppp: `:xxz`, `:xzx`, `:zxx` and `:zzz`
 
-## Keyword Arguments
+# Arguments
+* `θ`: title angle of the moiety
+* `t`: tensor element (see above)
+
+# Keyword Arguments
 * `pointgroup::Symbol`: point group of the moiety (possible values: `:c3v`)
 * `mode::Symbol`: vibrational mode (possible values: `:ss` (symmetric stretch), `:as` (asymmetric stretch))
 * `R::Real`: the hyperpolarizability ratio \$R = \\beta_{aac} / \\beta_{ccc} = \\beta_{bbc} / \\beta_{ccc}\$. Has only to be provided for point group `:c3v` and mode `:ss`.
-* `beta`: hyperpolarizability
+* `beta::Real`: hyperpolarizability
     * \$\\beta_{ccc}\$ for `:c3v` and `:ss`
     * \$\\beta_{aca} = \\beta_{bcb}\$ for `:c3v` and `:as`
+* `N`::Real: number of oscillators
 
 | Molecule                  	| Group  	| R   	|
 |:--------------------------	|:-------	|:----	|
@@ -99,19 +104,6 @@ function susceptibility(θ::Real, t::Symbol;
     return χ
 end
 
-# """
-#     susceptibility(θ::AbstractArray{<:Real,1}, t::Array{Symbol}; pointgroup, mode, R, beta, N)
-
-# Compute the susceptibility for angles `θ` and tensor elements `t`. Returns an array with
-# length `length(θ)` where each entry represents the susceptibility for all tensor elements
-# at the given angle.
-# """
-# function susceptibility(θ::Real, t::Array{Symbol,1};
-#     pointgroup::Union{Nothing,Symbol}=nothing, mode::Union{Nothing,Symbol}=nothing, 
-#     R::Union{Nothing,Real}=nothing, beta::Real=1.0, N::Real=1.0)
-#     [susceptibility(θ, _t; pointgroup=pointgroup, mode=mode, R=R) for _t in t]
-# end
-
 """
     effective_susceptibility_ssp(n1, n2, n′, β, χ_yyz)
 
@@ -145,6 +137,8 @@ end
 
 """
     effective_susceptibility_ssp(s::SFGAnalysis.Setup, χ_yyz)
+
+Compute the effective susceptibility in ssp polarization.
 
 # Arguments
 * `s`: setup object
@@ -214,6 +208,25 @@ function effective_susceptibility_ppp(s::Setup, χ::Array{<:Number})
 end
 
 """
+    effective_susceptibility(θ::Real, s::Setup, p::Symbol; <kwargs>)
+
+Compute the effective susceptibility for a moiety with tilt angle `θ` for a `Setup` `s`
+in polarization `p`.
+
+# Arguments
+* `θ`: tilt angle of the moiety
+* `s`: `Setup` object
+* `p`: polarization combination (`:ppp` or `:ssp`)
+
+# Keyword Arguments
+* `pointgroup::Symbol`: point group of the moiety (possible values: `:c3v`)
+* `mode::Symbol`: vibrational mode (possible values: `:ss` (symmetric stretch), `:as` (asymmetric stretch))
+* `R::Real`: the hyperpolarizability ratio \$R = \\beta_{aac} / \\beta_{ccc} = \\beta_{bbc} / \\beta_{ccc}\$. Has only to be provided for point group `:c3v` and mode `:ss`.
+* `beta::Real`: hyperpolarizability
+    * \$\\beta_{ccc}\$ for `:c3v` and `:ss`
+    * \$\\beta_{aca} = \\beta_{bcb}\$ for `:c3v` and `:as`
+* `N::Real`: number of oscillators
+
 """
 function effective_susceptibility(θ::Real, s::Setup, p::Symbol;
     pointgroup::Union{Nothing,Symbol}=nothing, 
@@ -239,4 +252,21 @@ function effective_susceptibility(θ::Real, s::Setup, p::Symbol;
         χ_eff = effective_susceptibility_ssp(s, χ)
     end
     χ_eff
+end
+
+"""
+    effective_susceptibility(d::Distribution, s::Setup, p::Symbol; <kwargs>)
+    
+Same as above. In this case the tilt angle `θ` is expressed by a `Distribution` `d`.
+"""
+function effective_susceptibility(d::Distribution, s::Setup, p::Symbol;
+    pointgroup::Union{Nothing,Symbol}=nothing, 
+    mode::Union{Nothing,Symbol}=nothing, 
+    R::Union{Nothing,Real}=nothing, 
+    beta::Real=1.0, N::Real=1.0,
+    samples::Int=360)
+
+    sus = θ -> effective_susceptibility(θ, s, p; pointgroup=pointgroup, mode=mode, R=R, beta=beta, N=N) 
+    integral, error = quadgk(θ -> sus(θ) * pdf(d, θ), -π, π, rtol=1e-8)
+    integral
 end

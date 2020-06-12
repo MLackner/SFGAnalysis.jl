@@ -1,5 +1,6 @@
 using SFGAnalysis
 using Test
+import Distributions: Normal
 
 @testset "SFGAnalysis.jl" begin
     λ1 = 515
@@ -26,7 +27,6 @@ using Test
     n21 = 1.3
     n22 = 1.4
     s = Setup((ω1, ω2), (β1, β2), (n1, n11, n12), (n2, n21, n22))
-    display(s)
 
     # Test ninterface
     # https://doi.org/10.1103/PhysRevB.59.1263 for verification
@@ -67,7 +67,6 @@ end
     n22 = 1.33
     R = 1.7
     s = Setup((ω1, ω2), (β1[1], β2[1]), (n1, n11, n12), (n2, n21, n22))
-    display(s)
 
     θ = range(0, π/2, length=91)
 
@@ -76,6 +75,50 @@ end
     χ_eff_ssp_as = effective_susceptibility.(θ, s, :ssp; pointgroup=:c3v, mode=:as) * sec(s.Ω.β)
     χ_eff_ppp_ss = effective_susceptibility.(θ, s, :ppp; pointgroup=:c3v, mode=:ss, R=R) * sec(s.Ω.β)
     χ_eff_ppp_as = effective_susceptibility.(θ, s, :ppp; pointgroup=:c3v, mode=:as) * sec(s.Ω.β)
+
+    @test round(χ_eff_ssp_ss[1], digits=1) == 0.9
+    @test round(χ_eff_ssp_ss[45], digits=1) == 0.6
+    @test round(χ_eff_ssp_ss[90], digits=1) == 0.0
+
+    @test round(χ_eff_ppp_ss[1], digits=1) == -0.1
+    @test round(χ_eff_ppp_ss[45], digits=1) == 0.1
+    @test round(χ_eff_ppp_ss[90], digits=1) == 0.0
+
+    @test round(χ_eff_ssp_as[1], digits=1) == 0.0
+    @test round(χ_eff_ssp_as[45], digits=1) == -0.2
+    @test round(χ_eff_ssp_as[90], digits=1) == 0.0
+
+    @test round(χ_eff_ppp_as[1], digits=1) == 0.0
+    @test round(χ_eff_ppp_as[45], digits=1) == 0.4
+    @test round(χ_eff_ppp_as[90], digits=1) == 0.0
+end
+
+@testset "Distributions" begin
+    # Test the distribution functionality
+    # Do everything like in the testse "J. Phys. Chem. C 2007, 111, 8716-8725"
+    # This time we just assume a very narrow distribution. This way the results
+    # should be the same.
+    ω1 = wl2freq(532)
+    ω2 = wl2freq(3333)
+    β1 = [deg2rad(62), deg2rad(37)]
+    β2 = [deg2rad(53), deg2rad(51)]
+    n1  = 1
+    n11 = 1
+    n12 = 1
+    n2  = 1.33
+    n21 = 1.33
+    n22 = 1.33
+    R = 1.7
+    s = Setup((ω1, ω2), (β1[1], β2[1]), (n1, n11, n12), (n2, n21, n22))
+    display(s)
+
+    dist = [Normal(θ, π/100) for θ in range(0, π/2, length=91)]
+
+    # a factor is appended to the effective susceptibilities
+    χ_eff_ssp_ss = effective_susceptibility.(dist, s, :ssp; pointgroup=:c3v, mode=:ss, R=R) * sec(s.Ω.β)
+    χ_eff_ssp_as = effective_susceptibility.(dist, s, :ssp; pointgroup=:c3v, mode=:as) * sec(s.Ω.β)
+    χ_eff_ppp_ss = effective_susceptibility.(dist, s, :ppp; pointgroup=:c3v, mode=:ss, R=R) * sec(s.Ω.β)
+    χ_eff_ppp_as = effective_susceptibility.(dist, s, :ppp; pointgroup=:c3v, mode=:as) * sec(s.Ω.β)
 
     @test round(χ_eff_ssp_ss[1], digits=1) == 0.9
     @test round(χ_eff_ssp_ss[45], digits=1) == 0.6
