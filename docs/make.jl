@@ -14,3 +14,9 @@ makedocs(;
         "Home" => "index.md",
     ],
 )
+deploydocs(
+    repo   = "github.com/MLackner/SFGAnalysis.jl",
+    branch = "gh-pages",
+    devbranch = "master",
+    devurl = "dev",
+)
