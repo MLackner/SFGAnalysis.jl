@@ -77,6 +77,10 @@ end
     χ_eff_ssp_as = effective_susceptibility.(θ, s, :ssp; pointgroup=:c3v, mode=:as) * sec(s.Ω.β)
     χ_eff_ppp_ss = effective_susceptibility.(θ, s, :ppp; pointgroup=:c3v, mode=:ss, R=R) * sec(s.Ω.β)
     χ_eff_ppp_as = effective_susceptibility.(θ, s, :ppp; pointgroup=:c3v, mode=:as) * sec(s.Ω.β)
+    χ_eff_sps_ss = effective_susceptibility.(θ, s, :sps; pointgroup=:c3v, mode=:ss, R=R) * sec(s.Ω.β)
+    χ_eff_sps_as = effective_susceptibility.(θ, s, :sps; pointgroup=:c3v, mode=:as) * sec(s.Ω.β)
+    χ_eff_pss_ss = effective_susceptibility.(θ, s, :pss; pointgroup=:c3v, mode=:ss, R=R) * sec(s.Ω.β)
+    χ_eff_pss_as = effective_susceptibility.(θ, s, :pss; pointgroup=:c3v, mode=:as) * sec(s.Ω.β)
 
     @test round(χ_eff_ssp_ss[1], digits=1) == 0.9
     @test round(χ_eff_ssp_ss[45], digits=1) == 0.6
@@ -86,6 +90,28 @@ end
     @test round(χ_eff_ppp_ss[45], digits=1) == 0.1
     @test round(χ_eff_ppp_ss[90], digits=1) == 0.0
 
+    # The susceptibilities for pss polarization are the same as for
+    # sps polarization. Differences in effective susceptibility are
+    # solely due to differences in the fresnel factors with pss
+    # polarization generally having a smaller eff. sus.
+    @test abs(χ_eff_pss_ss[1]) <= abs(χ_eff_sps_ss[1])
+    @test abs(χ_eff_pss_ss[45]) <= abs(χ_eff_sps_ss[45])
+    @test abs(χ_eff_pss_ss[90]) <= abs(χ_eff_sps_ss[90])
+    @test abs(χ_eff_pss_as[1]) <= abs(χ_eff_sps_as[1])
+    @test abs(χ_eff_pss_as[45]) <= abs(χ_eff_sps_as[45])
+    @test abs(χ_eff_pss_as[90]) <= abs(χ_eff_sps_as[90])
+    # check sign
+    @test sign(χ_eff_pss_ss[1]) == sign(χ_eff_sps_ss[1])
+    @test sign(χ_eff_pss_ss[45]) == sign(χ_eff_sps_ss[45])
+    @test sign(χ_eff_pss_ss[90]) == sign(χ_eff_sps_ss[90])
+    @test sign(χ_eff_pss_as[1]) == sign(χ_eff_sps_as[1])
+    @test sign(χ_eff_pss_as[45]) == sign(χ_eff_sps_as[45])
+    @test sign(χ_eff_pss_as[90]) == sign(χ_eff_sps_as[90])
+
+    @test round(χ_eff_sps_ss[1], digits=1) == 0.0
+    @test round(χ_eff_sps_ss[45], digits=1) == -0.1
+    @test round(χ_eff_sps_ss[90], digits=1) == 0.0
+
     @test round(χ_eff_ssp_as[1], digits=1) == 0.0
     @test round(χ_eff_ssp_as[45], digits=1) == -0.2
     @test round(χ_eff_ssp_as[90], digits=1) == 0.0
@@ -93,7 +119,13 @@ end
     @test round(χ_eff_ppp_as[1], digits=1) == 0.0
     @test round(χ_eff_ppp_as[45], digits=1) == 0.4
     @test round(χ_eff_ppp_as[90], digits=1) == 0.0
+
+    @test round(χ_eff_sps_as[1], digits=1) == 0.6
+    @test round(χ_eff_sps_as[45], digits=1) == 0.2
+    @test round(χ_eff_sps_as[90], digits=1) == 0.0
 end
+
+#TODO: Add tests for pss
 
 @testset "Distributions" begin
     # Test the distribution functionality

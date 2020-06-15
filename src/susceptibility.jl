@@ -1,3 +1,5 @@
+## C3V Symmetry
+# Symmetric stretch
 """
 Susceptibility for tensor elements xxz and yyz.
 """
@@ -19,6 +21,7 @@ function susceptibility_c3v_ss_zzz(θ, R; β_ccc=1.0, N=1.0)
     N * β_ccc * ( R * cos(θ) + (1-R) * cos(θ)^3 )
 end
 
+# Asymmetric stretch
 """
 Susceptibility for tensor elements xxz and yyz.
 """
@@ -107,7 +110,7 @@ end
 """
     effective_susceptibility_ssp(n1, n2, n′, β, χ_yyz)
 
-Compute the effective susceptibility in ppp polarization.
+Compute the effective susceptibility in ssp polarization.
 
 # Arguments
 * `n1`: refractive indices of the medium in which the waves are propagating towards the interface
@@ -150,6 +153,103 @@ function effective_susceptibility_ssp(s::Setup, χ_yyz::Number)
     n′ = [s.Ω.n′, s.Ω1.n′, s.Ω2.n′]
     β = [s.Ω.β, s.Ω1.β, s.Ω2.β]
     effective_susceptibility_ssp(n1, n2, n′, β, χ_yyz)
+end
+
+"""
+    effective_susceptibility_sps(n1, n2, n′, β, χ_yyz)
+
+Compute the effective susceptibility in sps polarization.
+
+# Arguments
+* `n1`: refractive indices of the medium in which the waves are propagating towards the interface
+* `n2`: refractive indices of the other medium
+* `n′`: refractive index of the interface for \$\\omega_2\$
+* `β`:  incident or reflected angles
+* `χ_yyz`: susceptibility
+
+The arguments `n1`, `n2`, and `β` have to be arrays where the first element
+corresponds to the property for the sum frequency, the second to \$\\omega_1\$
+and the third to \$\\omega_2\$.
+
+https://doi.org/10.1080/01442350500225894
+"""
+function effective_susceptibility_sps(
+        n1::Array{<:Number},
+        n2::Array{<:Number}, 
+        n′::Array{<:Number}, 
+        β::Array{<:Number}, 
+        χ_yzy::Number
+    )
+    χ2_eff = fresnel_y(n1[1], n2[1], β[1]) * 
+             fresnel_z(n1[2], n2[2], n′[2], β[2]) * 
+             fresnel_y(n1[3], n2[3], β[3]) *
+             sin(β[2]) * χ_yzy
+end
+
+"""
+    effective_susceptibility_sps(s::SFGAnalysis.Setup, χ_yzy)
+
+Compute the effective susceptibility in sps polarization.
+
+# Arguments
+* `s`: setup object
+* `χ_yzy`: susceptibility
+"""
+function effective_susceptibility_sps(s::Setup, χ_yyz::Number)
+    n1 = [s.Ω.n1, s.Ω1.n1, s.Ω2.n1]
+    n2 = [s.Ω.n2, s.Ω1.n2, s.Ω2.n2]
+    n′ = [s.Ω.n′, s.Ω1.n′, s.Ω2.n′]
+    β = [s.Ω.β, s.Ω1.β, s.Ω2.β]
+    effective_susceptibility_sps(n1, n2, n′, β, χ_yyz)
+end
+
+# pss
+"""
+    effective_susceptibility_pss(n1, n2, n′, β, χ_yyz)
+
+Compute the effective susceptibility in pss polarization.
+
+# Arguments
+* `n1`: refractive indices of the medium in which the waves are propagating towards the interface
+* `n2`: refractive indices of the other medium
+* `n′`: refractive index of the interface for \$\\omega_2\$
+* `β`:  incident or reflected angles
+* `χ_yyz`: susceptibility
+
+The arguments `n1`, `n2`, and `β` have to be arrays where the first element
+corresponds to the property for the sum frequency, the second to \$\\omega_1\$
+and the third to \$\\omega_2\$.
+
+https://doi.org/10.1080/01442350500225894
+"""
+function effective_susceptibility_pss(
+        n1::Array{<:Number},
+        n2::Array{<:Number}, 
+        n′::Array{<:Number}, 
+        β::Array{<:Number}, 
+        χ_zyy::Number
+    )
+    χ2_eff = fresnel_z(n1[1], n2[1], n′[1], β[1]) * 
+             fresnel_y(n1[2], n2[2], β[2]) * 
+             fresnel_y(n1[3], n2[3], β[3]) *
+             sin(β[1]) * χ_zyy
+end
+
+"""
+    effective_susceptibility_pss(s::SFGAnalysis.Setup, χ_zyy)
+
+Compute the effective susceptibility in pss polarization.
+
+# Arguments
+* `s`: setup object
+* `χ_zyy`: susceptibility
+"""
+function effective_susceptibility_pss(s::Setup, χ_yyz::Number)
+    n1 = [s.Ω.n1, s.Ω1.n1, s.Ω2.n1]
+    n2 = [s.Ω.n2, s.Ω1.n2, s.Ω2.n2]
+    n′ = [s.Ω.n′, s.Ω1.n′, s.Ω2.n′]
+    β = [s.Ω.β, s.Ω1.β, s.Ω2.β]
+    effective_susceptibility_pss(n1, n2, n′, β, χ_yyz)
 end
 
 """
@@ -234,7 +334,7 @@ function effective_susceptibility(θ::Real, s::Setup, p::Symbol;
     R::Union{Nothing,Real}=nothing, 
     beta::Real=1.0, N::Real=1.0)
 
-    p in [:ssp, :ppp] || error("unknown polarization combination $p")
+    p in [:ssp, :ppp, :sps, :pss] || error("unknown polarization combination $p")
 
     if p == :ppp
         χ = susceptibility.(θ, [:xxz, :xzx, :zxx, :zzz]; 
@@ -250,6 +350,20 @@ function effective_susceptibility(θ::Real, s::Setup, p::Symbol;
             beta=beta, N=N
         )
         χ_eff = effective_susceptibility_ssp(s, χ)
+    elseif p == :sps
+        χ = susceptibility(θ, :yzy; 
+            pointgroup=pointgroup,
+            mode=mode, R=R,
+            beta=beta, N=N
+        )
+        χ_eff = effective_susceptibility_sps(s, χ)
+    elseif p == :pss
+        χ = susceptibility(θ, :zyy; 
+            pointgroup=pointgroup,
+            mode=mode, R=R,
+            beta=beta, N=N
+        )
+        χ_eff = effective_susceptibility_pss(s, χ)
     end
     χ_eff
 end
