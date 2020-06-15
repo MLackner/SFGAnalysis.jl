@@ -12,8 +12,6 @@ import Distributions: Normal
     β1 = π/4
     β2 = π/6
     β = sfangle(ω, ω1, ω2, β1, β2)
-    χ2_eff = 1e-5 + 1e-6im   # completely arbitrary. change for calculated value
-    @show sfgintensity(ω, ω1, ω2, β, χ2_eff)
 
     #TODO: are these really frequencies or angular frequencies or wavenumbers?
     @test wl2freq(λ1) ≈ 5.821212776699029e14 # source?
@@ -27,6 +25,10 @@ import Distributions: Normal
     n21 = 1.3
     n22 = 1.4
     s = Setup((ω1, ω2), (β1, β2), (n1, n11, n12), (n2, n21, n22))
+
+    # test sfgintensity
+    χ2_eff = 1e-5 + 1e-6im   # completely arbitrary. change for calculated value
+    @test sfgintensity(ω, β, χ2_eff) == sfgintensity(s, χ2_eff)
 
     # Test ninterface
     # https://doi.org/10.1103/PhysRevB.59.1263 for verification

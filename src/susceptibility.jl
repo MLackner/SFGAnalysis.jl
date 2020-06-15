@@ -59,8 +59,8 @@ Tensor elements important for specific polarization combinations:
 * `mode::Symbol`: vibrational mode (possible values: `:ss` (symmetric stretch), `:as` (asymmetric stretch))
 * `R::Real`: the hyperpolarizability ratio \$R = \\beta_{aac} / \\beta_{ccc} = \\beta_{bbc} / \\beta_{ccc}\$. Has only to be provided for point group `:c3v` and mode `:ss`.
 * `beta::Real`: hyperpolarizability
-    * \$\\beta_{ccc}\$ for `:c3v` and `:ss`
-    * \$\\beta_{aca} = \\beta_{bcb}\$ for `:c3v` and `:as`
+    * ``\\beta_{ccc}`` for `:c3v` and `:ss`
+    * ``\\beta_{aca} = \\beta_{bcb}`` for `:c3v` and `:as`
 * `N`::Real: number of oscillators
 
 | Molecule                  	| Group  	| R   	|
@@ -223,8 +223,8 @@ in polarization `p`.
 * `mode::Symbol`: vibrational mode (possible values: `:ss` (symmetric stretch), `:as` (asymmetric stretch))
 * `R::Real`: the hyperpolarizability ratio \$R = \\beta_{aac} / \\beta_{ccc} = \\beta_{bbc} / \\beta_{ccc}\$. Has only to be provided for point group `:c3v` and mode `:ss`.
 * `beta::Real`: hyperpolarizability
-    * \$\\beta_{ccc}\$ for `:c3v` and `:ss`
-    * \$\\beta_{aca} = \\beta_{bcb}\$ for `:c3v` and `:as`
+    * ``\\beta_{ccc}`` for `:c3v` and `:ss`
+    * ``\\beta_{aca} = \\beta_{bcb}`` for `:c3v` and `:as`
 * `N::Real`: number of oscillators
 
 """

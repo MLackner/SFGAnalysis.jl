@@ -69,7 +69,7 @@ end
 
 Calculate the index of refraction of the interfacial layer according to
 
-\$ \\left(\\frac{1}{n\\prime}\\right)^2 = \\frac{4n_2^2 + 2}{n_2^2(n_2 ^2+5)} \$.
+``\\left(\\frac{1}{n^\\prime}\\right)^2 = \\frac{4n_2^2 + 2}{n_2^2(n_2 ^2+5)}``.
 
 # Arguments
 * `n2`: refractive index of the medium in which the wave is **not** propagating towards the interface
