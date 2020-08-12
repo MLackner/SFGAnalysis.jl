@@ -7,6 +7,7 @@ include("types.jl")
 include("general.jl")
 include("fresnel.jl")
 include("susceptibility.jl")
+include("spectra.jl")
 
 export # types.jl
        Setup,
@@ -25,6 +26,8 @@ export # types.jl
        susceptibility,
        effective_susceptibility_ppp,
        effective_susceptibility_ssp,
-       effective_susceptibility
+       effective_susceptibility,
+       # spectra.jl
+       sfspectrum
 
 end

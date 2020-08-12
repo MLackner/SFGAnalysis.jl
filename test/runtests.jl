@@ -170,3 +170,23 @@ end
     @test round(χ_eff_ppp_as[45], digits=1) == 0.4
     @test round(χ_eff_ppp_as[90], digits=1) == 0.0
 end
+
+@testset "Spectra" begin
+    x = range(2850, 3050, length=201)
+    A = [1, 1]
+    ω = [2900, 3000]
+    Γ = [8, 8]
+    φ_number = 0
+    φ_array  = [0, 0]
+    χnr_real = 0
+    χnr_comp = Complex(0)
+    y1 = sfspectrum.(x, Ref(A), Ref(ω), Ref(Γ))
+    # φ belongs to χnr
+    y2 = sfspectrum.(x, Ref(A), Ref(ω), Ref(Γ), φ_number, χnr_real)
+    # φ belongs to A
+    y3 = sfspectrum.(x, Ref(A), Ref(ω), Ref(Γ), Ref(φ_array),  χnr_real)
+    # no phase
+    y4 = sfspectrum.(x, Ref(A), Ref(ω), Ref(Γ), χnr_real)
+    # all spectra should be equal
+    @test y1 == y2 == y3 == y4
+end
