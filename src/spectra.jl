@@ -73,3 +73,36 @@ Documentation
 function lorentzian(x, A, ω, Γ)
     A / (x - ω + 1im * Γ)
 end
+
+"""
+"""
+function sfspectrum_voigt(x, A, ω, Γ, σ)
+    T = eltype(A)
+    N = length(A)
+    sfspectrum_voigt(x, A, ω, Γ, σ, zeros(T,N), zero(T))
+end
+
+"""
+"""
+function sfspectrum_voigt(x::Number, A::T, ω::T, Γ::T, σ::T, φ::T, χnr::Number) where {T<:AbstractArray}
+    y = χnr
+    for i in eachindex(A)
+        y += voigt(x, A[i], ω[i], Γ[i], σ[i])
+    end
+    abs2(y)
+end
+
+"""
+"""
+function gaussian(x,μ,σ)
+	1 / (σ * √(2π)) * ℯ^(-(x-μ)^2 / 2σ^2)
+end
+
+"""
+"""
+function voigt(x, A, ω, Γ, σ)
+    f = τ -> gaussian(τ, ω, σ) * lorentzian(x-τ, A, 0, Γ)
+    r = 4σ # range of evaluated integral
+	integral, err = quadgk(f, ω-r, ω+r)
+	integral
+end
