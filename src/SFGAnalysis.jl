@@ -28,7 +28,7 @@ export # types.jl
        effective_susceptibility_ssp,
        effective_susceptibility,
        # spectra.jl
-       sfspectrum
+       sfspectrum,
        sfspectrum_voigt
 
 end
