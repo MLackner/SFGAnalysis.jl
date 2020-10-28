@@ -30,7 +30,7 @@ y = [sfspectrum(_x, A, ω, Γ) for _x in x]
 ```
 """
 function sfspectrum(x::Number, A::T, ω::T, Γ::T, φ::T, χnr::Number) where {T<:AbstractArray}
-    y = χnr
+    y = χnr + 0.0im
     for i in eachindex(A)
         y += lorentzian(x, A[i], ω[i], Γ[i]) * exp(1im * φ[i])
     end
@@ -44,6 +44,28 @@ function sfspectrum(x, A, ω, Γ)
     T = eltype(A)
     N = length(A)
     sfspectrum(x, A, ω, Γ, zeros(T,N), zero(T))
+end
+
+function sfspectrum!(y::Array{C}, x::T, A::T, ω::T, Γ::T, φ::T, χnr::C) where {T<:AbstractArray, C<:Complex}
+    y .= 0.0 + 0.0im
+    for j in eachindex(y)
+        for i in eachindex(A)
+            y[j] += lorentzian(x[j], A[i], ω[i], Γ[i]) * exp(1im * φ[i])
+        end
+        y[j] = abs2(y[j])
+    end
+    y
+end
+
+function sfspectrum!(y, x, A, ω, Γ)
+    y .= zero(eltype(y))
+    @inbounds Threads.@threads for j in eachindex(y)
+        for i in eachindex(A)
+            y[j] += lorentzian(x[j], A[i], ω[i], Γ[i])
+        end
+        y[j] = abs2(y[j])
+    end
+    y
 end
 
 """
