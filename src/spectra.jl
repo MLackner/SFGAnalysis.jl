@@ -59,7 +59,7 @@ end
 
 function sfspectrum!(y, x, A, ω, Γ)
     y .= zero(eltype(y))
-    @inbounds Threads.@threads for j in eachindex(y)
+    @inbounds for j in eachindex(y)
         for i in eachindex(A)
             y[j] += lorentzian(x[j], A[i], ω[i], Γ[i])
         end
