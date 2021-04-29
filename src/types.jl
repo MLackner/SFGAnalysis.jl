@@ -1,4 +1,4 @@
-import PrettyTables: pretty_table, simple
+import PrettyTables: pretty_table
 
 mutable struct Wave
     ω::Real
@@ -56,7 +56,7 @@ function Base.show(io::IO, s::Setup)
         "Ω2" λ2 ω2 rad2deg(s.Ω2.β) s.Ω2.n1 s.Ω2.n2 s.Ω2.n′;
     ]
     formatter = (v,i,j) -> typeof(v) <: Number ? round(v, digits=3) : v
-    header = ["", "λ (nm)", "ω (1/s)", "β (deg)", "n₁", "n₂", "n′"]
+    header = ["", "λ (nm)", "ω (s⁻¹)", "β (deg)", "n₁", "n₂", "n′"]
 
     println("SFGAnalysis.Setup")
     pretty_table(data; formatters=formatter, header=header)
