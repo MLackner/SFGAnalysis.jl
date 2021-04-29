@@ -59,7 +59,7 @@ function Base.show(io::IO, s::Setup)
     header = ["", "λ (nm)", "ω (1/s)", "β (deg)", "n₁", "n₂", "n′"]
 
     println("SFGAnalysis.Setup")
-    pretty_table(data, header; tf=simple, formatters=formatter)
+    pretty_table(data; formatters=formatter, header=header)
 end
 
 # In order to not broadcast Setup and treat it as a scalar
