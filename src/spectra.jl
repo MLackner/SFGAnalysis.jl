@@ -29,7 +29,7 @@ Alternatively use array comprehensions:
 y = [sfspectrum(_x, A, ω, Γ) for _x in x]
 ```
 """
-function sfspectrum(x::Number, A::T, ω::T, Γ::T, φ::T, χnr::N) where {T<:AbstractArray, N<:Number}
+function sfspectrum(x, A, ω, Γ, φ::T, χnr) where T<:AbstractVector
     y = χnr + 0.0im
     for i in eachindex(A)
         y += lorentzian(x, A[i], ω[i], Γ[i]) * exp(1im * φ[i])
@@ -47,7 +47,7 @@ function sfspectrum(x, A, ω, Γ)
 end
 
 function sfspectrum!(y::Array{C}, x::T, A::T, ω::T, Γ::T, φ::T, χnr::C) where {T<:AbstractArray, C<:Complex}
-    y .= 0.0 + 0.0im
+    y .= χnr
     for j in eachindex(y)
         for i in eachindex(A)
             y[j] += lorentzian(x[j], A[i], ω[i], Γ[i]) * exp(1im * φ[i])
@@ -71,7 +71,7 @@ end
 """
 If just one phase is passed, we assume that this belongs to the non-resonant background.
 """
-function sfspectrum(x, A, ω, Γ, φ::Number, χnr::Number)
+function sfspectrum(x, A, ω, Γ, φ::M, χnr) where M <: Number
     T = eltype(A)
     N = length(A)
     φ_array = zeros(T,N)
