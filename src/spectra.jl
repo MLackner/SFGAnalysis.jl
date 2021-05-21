@@ -29,7 +29,7 @@ Alternatively use array comprehensions:
 y = [sfspectrum(_x, A, ω, Γ) for _x in x]
 ```
 """
-function sfspectrum(x::Number, A::T, ω::T, Γ::T, φ::T, χnr::Number) where {T<:AbstractArray}
+function sfspectrum(x::Number, A::T, ω::T, Γ::T, φ::T, χnr::N) where {T<:AbstractArray, N<:Number}
     y = χnr + 0.0im
     for i in eachindex(A)
         y += lorentzian(x, A[i], ω[i], Γ[i]) * exp(1im * φ[i])
